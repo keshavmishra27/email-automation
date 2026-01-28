@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 EMAIL_ADDRESS = "keshavmishra1729@gmail.com"
-APP_PASSWORD = "wnwa pzzl poow dxym"
+APP_PASSWORD = "**** **** **** ****"
 SUBJECT = "Daily Update"
 
 
@@ -40,3 +40,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
