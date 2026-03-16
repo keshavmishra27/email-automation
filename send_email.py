@@ -1,18 +1,24 @@
 import smtplib
 from email.message import EmailMessage
 from datetime import datetime
+import os
 
-
-EMAIL_ADDRESS = "keshavmishra1729@gmail.com"
-APP_PASSWORD = "**** **** **** ****"
+EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
+APP_PASSWORD = os.getenv("APP_PASSWORD")
 SUBJECT = "Daily Update"
 
 
 def load_emails():
     with open("emails.txt", "r") as f:
-        return [line.strip() for line in f if line.strip()]
+        # Strip whitespace, newlines, and trailing commas/punctuation
+        emails = [line.strip().strip(',').strip() for line in f]
+        return [email for email in emails if email]
 
 def send_email(to_email):
+    if not to_email or "@" not in to_email:
+        print(f"Skipping invalid email address: '{to_email}'")
+        return
+
     msg = EmailMessage()
     msg["From"] = EMAIL_ADDRESS
     msg["To"] = to_email
@@ -28,14 +34,19 @@ Regards,
 Automation Agent
 """)
 
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(EMAIL_ADDRESS, APP_PASSWORD)
-        server.send_message(msg)
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(EMAIL_ADDRESS, APP_PASSWORD)
+            server.send_message(msg)
+    except smtplib.SMTPRecipientsRefused as e:
+        print(f"Recipient refused for {to_email}: {e}")
+    except Exception as e:
+        print(f"Failed to send to {to_email}: {e}")
 
 def main():
     emails = load_emails()
     for email in emails:
-        send_email(email)
+        send_email(email) #comment here before sending mails to crosscheck no. of mails
         print(f"Sent to {email}")
 
 if __name__ == "__main__":
